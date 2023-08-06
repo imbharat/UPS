@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Employee.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -18,9 +19,17 @@ namespace Employee.Views.Employee
     /// </summary>
     public partial class Employee : Page
     {
-        public Employee()
+        public Employee(EmployeeViewModel employeeViewModel)
         {
             InitializeComponent();
+            DataContext = employeeViewModel;
+            Loaded += Employee_Loaded;
+        }
+
+        private async void Employee_Loaded(object sender, RoutedEventArgs e)
+        {
+            var employeeViewModel = (EmployeeViewModel)DataContext;
+            await employeeViewModel.LoadEmployeesAsync();
         }
     }
 }

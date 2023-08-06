@@ -5,17 +5,41 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:actions="clr-namespace:Employee.Views.Employee.Actions"
       xmlns:list="clr-namespace:Employee.Views.Employee.List"
+      xmlns:pagination="clr-namespace:Employee.Views.Employee.Pagination"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Employee">
+      Title="Employee"
+      Margin="15">
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <actions:Actions Grid.Row="0"/>
-        <list:List Grid.Row="1"/>
+        <Grid Grid.Column="0">
+            <Grid.Effect>
+                <DropShadowEffect ShadowDepth="5" Direction="270" Color="#EADBFF" Opacity="0.8" />
+            </Grid.Effect>
+            <StackPanel Grid.Column="0">
+                <actions:Actions/>
+            </StackPanel>
+        </Grid>
+
+        <Border BorderBrush="Black" BorderThickness="1" Width="1" VerticalAlignment="Stretch" Grid.Column="1" Grid.RowSpan="2" Margin="0,15,0,0"/>
+
+        <Grid Grid.Column="2">
+            <list:List/>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center">
+            <pagination:Pagination/>
+        </StackPanel>
     </Grid>
 </Page>

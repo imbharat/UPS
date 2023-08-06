@@ -3,11 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Employee"
-        xmlns:employee="clr-namespace:Employee.Views.Employee"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        WindowStyle="ThreeDBorderWindow"
+        Title="UPS - Employee Management" Height="450" Width="800"
+        Loaded="MainWindow_Loaded">
+    <Grid Grid.Row="1">
         <Frame x:Name="mainFrame" NavigationUIVisibility="Hidden" />
     </Grid>
 </Window>

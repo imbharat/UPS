@@ -12,12 +12,12 @@
         </Grid.RowDefinitions>
 
         <!-- Top section with buttons -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
-            <Button Content="Add Employee" Style="{StaticResource PrimaryButtonStyle}"/>
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10">
+            <Button Content="Add Employee" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding AddEmployeeCommand}"/>
             <Button Content="Edit Employee" Style="{StaticResource PrimaryButtonStyle}"/>
             <Button Content="Delete Employee" Style="{StaticResource PrimaryButtonStyle}"/>
             <Button Content="Search Employees" Style="{StaticResource PrimaryButtonStyle}"/>
-            <Button Content="Export CSV" Style="{StaticResource PrimaryButtonStyle}"/>
+            <Button Content="Export CSV" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding ExportToCsvCommand}"/>
         </StackPanel>
     </Grid>
 </UserControl>

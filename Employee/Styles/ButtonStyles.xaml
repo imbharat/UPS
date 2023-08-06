@@ -3,16 +3,66 @@
                     xmlns:local="clr-namespace:Employee.Styles">
     <!-- Style for Buttons -->
     <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-        <Setter Property="Padding" Value="10,5"/>
         <Setter Property="Margin" Value="5"/>
-        <Setter Property="Background" Value="#2196F3"/>
+        <Setter Property="Background" Value="#340076"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="10">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#1976D2"/>
+                <Setter Property="Background" Value="#EADBFF"/>
+                <Setter Property="Foreground" Value="Black"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="Gray"/>
+                <Setter Property="Foreground" Value="DarkGray"/>
+                <Setter Property="Opacity" Value="0.5"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
+    <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Foreground" Value="#340076"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="#340076"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="10">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#340076"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="Gray"/>
+                <Setter Property="Foreground" Value="DarkGray"/>
+                <Setter Property="Opacity" Value="0.5"/>
             </Trigger>
         </Style.Triggers>
     </Style>
