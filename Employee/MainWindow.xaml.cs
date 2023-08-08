@@ -3,7 +3,7 @@ using Employee.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Input;
-using EmployeePage = Employee.Views.Employee;
+using EmployeePage = Employee.Views;
 
 
 namespace Employee
@@ -16,27 +16,17 @@ namespace Employee
         {
             InitializeComponent();
             this.WindowState = WindowState.Maximized;
-            CloseCommand = new RelayCommand(CloseWindow);
-            MinimizeCommand = new RelayCommand(MinimizeWindow);
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var employeeService = new EmployeeService();
-            var addEmployeeViewModel = new AddEmployeeViewModel();
-            var employeeViewModel = new EmployeeViewModel(employeeService, addEmployeeViewModel);
-            mainFrame.Navigate(new EmployeePage.Employee(employeeViewModel));
-        }
-
-        private void CloseWindow(object obj)
-        {
-            Application.Current.Shutdown();
-        }
-
-        // Minimize the window
-        private void MinimizeWindow(object obj)
-        {
-            this.WindowState = WindowState.Minimized;
+            //injecting all required dependencies
+            EmployeeService employeeService = new EmployeeService();
+            AddEditEmployeeViewModel addEmployeeViewModel = new AddEditEmployeeViewModel();
+            SearchBarViewModel searchBarViewModel = new SearchBarViewModel();
+            EmployeeViewModel employeeViewModel = new EmployeeViewModel(employeeService, 
+                addEmployeeViewModel, searchBarViewModel);
+            mainFrame.Navigate(new EmployeePage.Employee(employeeViewModel, searchBarViewModel));
         }
     }
 }

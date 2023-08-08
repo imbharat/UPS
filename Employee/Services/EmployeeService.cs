@@ -39,11 +39,33 @@ namespace Employee.Services
             }
         }
 
+        public async Task<EmployeeModel> EditEmployeeAsync(AddEditEmployeeModel employee, int empId)
+        {
+            try
+            {
+                var emp_payload = JsonContent.Create(employee);
+                var response = await _httpClient.PutAsync(Constants.UpdateUser.Replace("{0}", empId.ToString()), emp_payload);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsAsync<EmployeeModel>();
+                }
+                else
+                {
+                    return new EmployeeModel();
+                }
+            }
+            catch (HttpRequestException)
+            {
+                return new EmployeeModel();
+            }
+        }
+
         public async Task<List<EmployeeModel>> GetEmployeesAsync(string searchQuery, string pageQuery)
         {
             try
             {
-                string finalQuery = string.IsNullOrEmpty(searchQuery) ? pageQuery : $"{searchQuery}&${pageQuery}"; 
+                string finalQuery = string.IsNullOrEmpty(searchQuery) ? pageQuery : $"{pageQuery}{searchQuery}"; 
                 var response = await _httpClient.GetAsync(Constants.GetUsers + finalQuery);
 
                 if (response.IsSuccessStatusCode)
@@ -58,6 +80,27 @@ namespace Employee.Services
             catch (HttpRequestException)
             {
                 return new List<EmployeeModel>();
+            }
+        }
+
+        public async Task<EmployeeModel> DeleteEmployeeAsync(int empId)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync(Constants.DeleteUser.Replace("{0}", empId.ToString()));
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsAsync<EmployeeModel>();
+                }
+                else
+                {
+                    return new EmployeeModel();
+                }
+            }
+            catch (HttpRequestException)
+            {
+                return new EmployeeModel();
             }
         }
     }

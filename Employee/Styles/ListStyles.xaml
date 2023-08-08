@@ -1,10 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Employee.Styles">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style x:Key="GridStyle" TargetType="DataGrid">
         <Setter Property="GridLinesVisibility" Value="Horizontal" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="RowHeight" Value="45" />
+        <Setter Property="RowHeight" Value="40" />
         <Setter Property="Margin" Value="15" />
         <Setter Property="Background" Value="White"/>
         <Setter Property="RowHeaderWidth" Value="0"/>
@@ -14,7 +13,7 @@
     <Style x:Key="GridHeaderStyle" TargetType="DataGridColumnHeader">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="FontWeight" Value="Medium"/>
-        <Setter Property="Height" Value="45" />
+        <Setter Property="Height" Value="40" />
         <Setter Property="Background" Value="#340076"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="FontSize" Value="15" />
@@ -25,23 +24,20 @@
         <Setter Property="Foreground" Value="Black" />
         <Setter Property="FontSize" Value="12" />
         <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#EADBFF" />
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="#CCDAFF" />
             </Trigger>
         </Style.Triggers>
     </Style>
+
     <Style x:Key="CustomDataGridCellStyle" TargetType="DataGridCell">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="DataGridCell">
-                    <Border x:Name="cellBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
-                        <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                    <Border x:Name="cellBorder" Background="{TemplateBinding Background}" BorderBrush="Transparent" BorderThickness="0" SnapsToDevicePixels="True">
+                        <ContentPresenter VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="cellBorder" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
-                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
-                        </Trigger>
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
                             <Setter TargetName="cellBorder" Property="BorderBrush" Value="{DynamicResource {x:Static DataGrid.FocusBorderBrushKey}}" />
                         </Trigger>
@@ -49,6 +45,5 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
 </ResourceDictionary>

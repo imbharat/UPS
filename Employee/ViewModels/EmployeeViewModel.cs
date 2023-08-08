@@ -2,7 +2,7 @@
 using CsvHelper.Configuration;
 using Employee.Models;
 using Employee.Services;
-using Employee.Views.Employee.AddWindow;
+using Employee.Views;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -21,20 +21,34 @@ namespace Employee.ViewModels
     {
         private ObservableCollection<EmployeeModel> _employeeData;
         private readonly IEmployeeService _employeeService;
-        private readonly AddEmployeeViewModel _addEmployeeViewModel;
-        private AddEmployee _addEmployeeWindow;
+        private readonly AddEditEmployeeViewModel _addEditEmployeeViewModel;
+        private readonly SearchBarViewModel _searchBarViewModel;
+        private AddEditEmployee _addEditEmployeeWindow;
+
         private string _searchText;
         private bool _isPreviousButtonEnabled;
         private bool _isNextButtonEnabled;
         private int _page = 1;
         private bool isLoading;
+        private bool _showEditDeleteButton = false;
+        private EmployeeModel _selectedEmployee;
 
         public ObservableCollection<EmployeeModel> EmployeeData
         {
             get { return _employeeData; }
             set { _employeeData = value; OnPropertyChanged(); }
         }
-
+        public EmployeeModel SelectedEmployee
+        {
+            get { return _selectedEmployee; }
+            set { _selectedEmployee = value;
+                if (value != null)
+                    ShowEditDeleteButton = true;
+                else
+                    ShowEditDeleteButton = false;
+                OnPropertyChanged(); 
+            }
+        }
         public bool IsPreviousButtonEnabled
         {
             get { return _isPreviousButtonEnabled; }
@@ -47,7 +61,7 @@ namespace Employee.ViewModels
         }
         public int Page { 
             get { return _page; } 
-            set { _page = value; OnPropertyChanged(); } 
+            set { _page = value; IsPreviousButtonEnabled = Page > 1; OnPropertyChanged(); } 
         }
         public string SearchText
         {
@@ -56,29 +70,40 @@ namespace Employee.ViewModels
         }
         public bool IsLoading
         {
-            get => isLoading;
-            set
-            {
-                isLoading = value;
-                OnPropertyChanged();
-            }
+            get { return isLoading; }
+            set { isLoading = value; OnPropertyChanged(); }
+        }
+        public bool ShowEditDeleteButton
+        {
+            get { return _showEditDeleteButton; }
+            set { _showEditDeleteButton = value; OnPropertyChanged(); }
         }
 
         public ICommand NextPageCommand { get; }
         public ICommand PreviousPageCommand { get; }
         public ICommand AddEmployeeCommand { get; }
+        public ICommand EditEmployeeCommand { get; }
+        public ICommand DeleteEmployeeCommand { get; }
         public ICommand ExportToCsvCommand { get; }
 
-        public EmployeeViewModel(IEmployeeService employeeService, AddEmployeeViewModel addEmployeeViewModel)
+        public EmployeeViewModel(IEmployeeService employeeService, 
+            AddEditEmployeeViewModel addEditEmployeeViewModel, SearchBarViewModel searchBarViewModel)
         {
             _employeeService = employeeService;
-            _addEmployeeViewModel = addEmployeeViewModel;
-            _addEmployeeViewModel.OnSubmit += OnEmployeeSubmit;
-            _addEmployeeViewModel.OnCancel += OnEmployeeAddCancel;
+            _addEditEmployeeViewModel = addEditEmployeeViewModel;
+            _searchBarViewModel = searchBarViewModel;
+
+            _addEditEmployeeViewModel.OnSubmit += OnEmployeeSubmit;
+            _addEditEmployeeViewModel.OnCancel += OnEmployeeAddCancel;
+
+            _searchBarViewModel.OnEmployeeSearch += OnSearch;
+            _searchBarViewModel.OnClearSearch += OnClearSearch;
 
             NextPageCommand = new RelayCommand(async param => await LoadNextPage(), param => true);
             PreviousPageCommand = new RelayCommand(async param => await LoadPreviousPage(), param => Page > 0);
             AddEmployeeCommand = new RelayCommand(OnAddEmployee);
+            EditEmployeeCommand = new RelayCommand(OnEditEmployee);
+            DeleteEmployeeCommand = new RelayCommand(OnDeleteEmployee);
             ExportToCsvCommand = new RelayCommand(OnExportToCsv);
 
             EmployeeData = new ObservableCollection<EmployeeModel>();
@@ -97,7 +122,6 @@ namespace Employee.ViewModels
                 {
                     await GetData_PopulateGrid(Page + 1);
                     Page++;
-                    IsPreviousButtonEnabled = Page > 1;
                 }
                 finally
                 {
@@ -114,7 +138,6 @@ namespace Employee.ViewModels
                 {
                     await GetData_PopulateGrid(Page - 1);
                     Page--;
-                    IsPreviousButtonEnabled = Page > 1;
                 }
                 finally
                 {
@@ -124,8 +147,8 @@ namespace Employee.ViewModels
         }
         private async Task GetData_PopulateGrid(int pageNum)
         {
-            string searchQuery = string.IsNullOrEmpty(SearchText) ? "" : $"?q={SearchText}";
             string pageQuery = $"?page={pageNum}";
+            string searchQuery = string.IsNullOrEmpty(SearchText) ? "" : SearchText;
             List<EmployeeModel> employees = await _employeeService.GetEmployeesAsync(searchQuery, pageQuery);
             IsNextButtonEnabled = employees.Count >= 10;
             EmployeeData.Clear();
@@ -135,20 +158,34 @@ namespace Employee.ViewModels
             }
         }
 
-
         private void CloseDialog()
         {
-            if (_addEmployeeWindow != null)
+            if (_addEditEmployeeWindow != null)
             {
-                _addEmployeeWindow.Close();
-                _addEmployeeWindow = null;
+                _addEditEmployeeWindow.Close();
+                _addEditEmployeeWindow = null;
             }
         }
 
         private void OnAddEmployee(object parameter)
         {
-            _addEmployeeWindow = new AddEmployee(_addEmployeeViewModel);
-            _addEmployeeWindow.ShowDialog();
+            _addEditEmployeeViewModel.SetValues();
+            _addEditEmployeeWindow = new AddEditEmployee(_addEditEmployeeViewModel);
+            _addEditEmployeeWindow.ShowDialog();
+        }
+        private void OnEditEmployee(object parameter)
+        {
+            _addEditEmployeeViewModel.SetValues(SelectedEmployee);
+            _addEditEmployeeWindow = new AddEditEmployee(_addEditEmployeeViewModel);
+            _addEditEmployeeWindow.ShowDialog();
+        }
+        private async void OnDeleteEmployee(object parameter)
+        {
+            EmployeeModel emp_deleted = await _employeeService.DeleteEmployeeAsync(SelectedEmployee.id);
+            if(emp_deleted?.id != 0)
+            {
+                await LoadEmployeesAsync();
+            }
         }
         private void OnExportToCsv(object parameter)
         {
@@ -183,18 +220,28 @@ namespace Employee.ViewModels
             
         }
 
-
+        //callbacks subscriptions
         private async void OnEmployeeSubmit(object sender, EmployeeModel employee)
         {
-            AddEditEmployeeModel addEmployee = new AddEditEmployeeModel()
+            bool success = false;
+            AddEditEmployeeModel employeePayload = new AddEditEmployeeModel()
             {
                 name = employee.name,
                 email = employee.email,
                 gender = employee.gender,
                 status = employee.status
             };
-            EmployeeModel emp_added = await _employeeService.AddEmployeeAsync(addEmployee);
-            if (emp_added?.id != 0)
+            if (employee?.id != null && employee?.id != 0)
+            {
+                EmployeeModel emp_edited = await _employeeService.EditEmployeeAsync(employeePayload, employee.id);
+                if (emp_edited?.id != 0) success = true;
+            }
+            else
+            {
+                EmployeeModel emp_added = await _employeeService.AddEmployeeAsync(employeePayload);
+                if (emp_added?.id != 0) success = true;
+            }
+            if (success)
             {
                 await LoadEmployeesAsync();
                 CloseDialog();
@@ -203,6 +250,19 @@ namespace Employee.ViewModels
         private void OnEmployeeAddCancel(object sender, EventArgs e)
         {
             CloseDialog();
+        }
+
+        private async void OnSearch(object sender, string searchString)
+        {
+            SearchText = searchString;
+            Page = 1;
+            await LoadEmployeesAsync();
+        }
+        private async void OnClearSearch(object sender, EventArgs e)
+        {
+            SearchText = string.Empty;
+            Page = 1;
+            await LoadEmployeesAsync();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -1,7 +1,5 @@
 ﻿using Employee.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Employee.Services
@@ -10,5 +8,7 @@ namespace Employee.Services
     {
         Task<List<EmployeeModel>> GetEmployeesAsync(string searchQuery, string pageQuery);
         Task<EmployeeModel> AddEmployeeAsync(AddEditEmployeeModel employee);
+        Task<EmployeeModel> EditEmployeeAsync(AddEditEmployeeModel employee, int empId);
+        Task<EmployeeModel> DeleteEmployeeAsync(int employeeId);
     }
 }
