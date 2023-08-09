@@ -22,7 +22,7 @@ Before you start, make sure you have the following installed:
 ### Installation
 
 1. Clone the repository:
-   git clone https://github.com/your-username/employee-management.git
+   git clone https://github.com/imbharat/UPS.git
 
 2. Navigate to the project directory:
 
