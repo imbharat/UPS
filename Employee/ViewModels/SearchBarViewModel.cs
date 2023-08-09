@@ -74,7 +74,10 @@ namespace Employee.ViewModels
             {
                 searchString += $"&status={SearchStatus}";
             }
-            OnEmployeeSearch?.Invoke(this, searchString);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                OnEmployeeSearch?.Invoke(this, searchString);
+            }
         }
 
         private void Clear()

@@ -91,15 +91,19 @@ namespace Employee.ViewModels
 
         private void SaveEmployee()
         {
-            EmployeeModel employee = new EmployeeModel()
+            if (!(string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Email) 
+                || string.IsNullOrEmpty(Gender) || string.IsNullOrEmpty(Status)))
             {
-                id = Id.HasValue ? Id.Value : 0,
-                name = Name,
-                email = Email,
-                gender = Gender,
-                status = Status
-            };
-            OnSubmit?.Invoke(this, employee);
+                EmployeeModel employee = new EmployeeModel()
+                {
+                    id = Id.HasValue ? Id.Value : 0,
+                    name = Name,
+                    email = Email,
+                    gender = Gender,
+                    status = Status
+                };
+                OnSubmit?.Invoke(this, employee);
+            }
         }
 
         private void Cancel()
